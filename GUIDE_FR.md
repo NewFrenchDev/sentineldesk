@@ -83,7 +83,7 @@ python -m sentineldesk
 
 ## 🛡️ Fonctions de Sécurité Expliquées
 
-### 1. Détection de Parentage Suspect
+### 1. Détection de Parent-Child Process Suspect
 
 **Que fait-elle ?**  
 Détecte quand un processus dangereux est lancé par un parent inattendu.
@@ -169,7 +169,7 @@ Les cryptominers cachés monopolisent le CPU.
 
 ## 🧪 Tester les Alertes
 
-### Test 1 : Parentage (sans danger)
+### Test 1 : Parent-Child Process (sans danger)
 
 1. Ouvrir Word
 2. Alt+F11 → Éditeur VBA

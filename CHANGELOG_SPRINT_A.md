@@ -31,10 +31,10 @@ parent_exe = parent_info.get("exe", "")
 
 ---
 
-### 2. Règles de Détection par Parentage
+### 2. Règles de Détection par Parent-Child Process
 
 **Fichiers modifiés :**
-- `detectors.py` : Nouvelle méthode `_check_parentage()`
+- `detectors.py` : Nouvelle méthode `_check_parent-child process()`
 - `config.py` : Nouveau flag `suspicious_parent_alert: bool`
 
 **Règles implémentées :**
@@ -67,7 +67,7 @@ if child_base == "rundll32.exe" and parent_base not in _SYSTEM_PARENTS_FOR_RUNDL
 - **Alert ID :** `RUNDLL32_SUSPICIOUS_PARENT`
 
 **Anti-spam :**
-- Cache `_alerted_parentage: Set[tuple]` pour chaque `(ppid, pid, rule_type)`
+- Cache `_alerted_parent-child process: Set[tuple]` pour chaque `(ppid, pid, rule_type)`
 - Purge automatique quand le processus disparaît
 - **Résultat :** une seule alerte par transition, pas de spam à chaque tick
 
@@ -323,7 +323,7 @@ Onglets UI               : 5
 
 ## 🧪 Tests Suggérés
 
-### Test 1 : Parentage Office→Shell
+### Test 1 : Parent-Child Process Office→Shell
 1. Ouvrir Word
 2. Alt+F11 → VBA Editor
 3. Insérer module :

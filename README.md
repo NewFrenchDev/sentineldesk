@@ -20,7 +20,7 @@ SentinelDesk continuously monitors your Windows system for suspicious activity u
 ✅ **Process Tree Visualization** — Parent→child relationships (who launched what)  
 ✅ **Persistence Monitoring** — Watches Registry Run keys, Startup folders, Scheduled Tasks  
 ✅ **Hash Blacklist** — Alert on known malware SHA-256 signatures  
-✅ **Suspicious Parentage Detection** — Detects Office docs launching shells, exe from Temp, etc.  
+✅ **Suspicious Parent-Child Process Detection** — Detects Office docs launching shells, exe from Temp, etc.  
 ✅ **Alerts & Timeline** — All events logged to SQLite with full forensic history  
 ✅ **Modern UI** — Dark cyber-security theme with glass-morphism, live graphs, sortable tables  
 
@@ -51,6 +51,17 @@ The app will create `~/.sentineldesk/` with:
 - `sentineldesk.db` — SQLite database (alerts, timeline, baselines)
 - `config.json` — User settings
 - `blacklist_sha256.txt` — Hash blacklist (one SHA-256 per line)
+
+---
+
+## 📸 Screenshots
+
+**See [SCREENSHOTS.md](SCREENSHOTS.md) for detailed visual walkthrough.**
+
+| Dashboard | Alerts | Process Tree | Timeline |
+|-----------|--------|--------------|----------|
+| ![](SentinelDesk1.png) | ![](SentinelDesk2.png) | ![](SentinelDesk3.png) | ![](SentinelDesk4.png) |
+| Real-time monitoring with live graphs | Security events with severity badges | Parent-child process visualization | Complete event history |
 
 ---
 
@@ -86,7 +97,7 @@ The app will create `~/.sentineldesk/` with:
 
 ### Detection Rules (Sprint A)
 
-#### 1. **Suspicious Parentage**
+#### 1. **Suspicious Parent-Child Process**
 Detects when dangerous processes are spawned by unexpected parents:
 
 | Pattern | Severity | Why It Matters |
@@ -221,7 +232,7 @@ sqlite3 ~/.sentineldesk/sentineldesk.db ".mode csv" ".once export.csv" "SELECT *
 
 To test detection rules without actual malware:
 
-### 1. Test Suspicious Parentage
+### 1. Test Suspicious Parent-Child Process
 Open Word/Excel, then:
 ```vbnet
 ' In VBA editor (Alt+F11):
