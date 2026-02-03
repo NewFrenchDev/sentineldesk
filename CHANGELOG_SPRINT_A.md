@@ -34,7 +34,7 @@ parent_exe = parent_info.get("exe", "")
 ### 2. Règles de Détection par Parent-Child Process
 
 **Fichiers modifiés :**
-- `detectors.py` : Nouvelle méthode `_check_parent-child process()`
+- `detectors.py` : Nouvelle méthode `_check_parentage()`
 - `config.py` : Nouveau flag `suspicious_parent_alert: bool`
 
 **Règles implémentées :**
@@ -67,7 +67,7 @@ if child_base == "rundll32.exe" and parent_base not in _SYSTEM_PARENTS_FOR_RUNDL
 - **Alert ID :** `RUNDLL32_SUSPICIOUS_PARENT`
 
 **Anti-spam :**
-- Cache `_alerted_parent-child process: Set[tuple]` pour chaque `(ppid, pid, rule_type)`
+- Cache `_alerted_parentage: Set[tuple]` pour chaque `(ppid, pid, rule_type)`
 - Purge automatique quand le processus disparaît
 - **Résultat :** une seule alerte par transition, pas de spam à chaque tick
 

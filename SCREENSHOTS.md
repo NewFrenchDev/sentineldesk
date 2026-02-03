@@ -6,7 +6,7 @@ Visual walkthrough of SentinelDesk's interface and features.
 
 ## 🎯 Dashboard - Real-Time Monitoring
 
-![Dashboard](src\SentinelDesk1.png)
+![Dashboard](src/SentinelDesk1.png)
 
 **Main monitoring view featuring:**
 
@@ -36,7 +36,7 @@ Visual walkthrough of SentinelDesk's interface and features.
 
 ## 🚨 Alerts - Security Events
 
-![Alerts Tab](src\SentinelDesk2.png)
+![Alerts Tab](src/SentinelDesk2.png)
 
 **Security alerts with severity-based filtering:**
 
@@ -69,7 +69,7 @@ Each alert shows:
 
 ## 🌲 Process Tree - Parent-Child Relationships
 
-![Process Tree](src\SentinelDesk3.png)
+![Process Tree](src/SentinelDesk3.png)
 
 **Hierarchical view of process relationships:**
 
@@ -97,7 +97,7 @@ This view is critical for detecting:
 
 ## 📊 Timeline - Event History
 
-![Timeline](src\SentinelDesk4.png)
+![Timeline](src/SentinelDesk4.png)
 
 **Complete chronological log of all system events:**
 
