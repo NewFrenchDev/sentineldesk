@@ -1,0 +1,12 @@
+# SentinelDesk SHA-256 Hash Blacklist
+# One hash per line (64 hex chars)
+# This is a demo file — in production, populate with real malware hashes from:
+#   • VirusTotal
+#   • MITRE ATT&CK
+#   • Malware Bazaar
+#   • Your internal threat intelligence
+
+# Example fictional hashes (these are NOT real malware, just for demo):
+0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
+1111111111111111111111111111111111111111111111111111111111111111
