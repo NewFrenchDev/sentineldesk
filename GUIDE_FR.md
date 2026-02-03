@@ -69,7 +69,7 @@ python -m sentineldesk
 {
   "sample_interval_ms": 1000,              // Fréquence d'échantillonnage (ms)
   
-  "suspicious_parent_alert": true,         // Activer détection parentage
+  "suspicious_parent_alert": true,         // Activer détection parent-child process
   "persistence_watch_enabled": true,       // Surveiller Run keys / Startup
   
   "cpu_spike_threshold_pct": 85.0,         // Seuil CPU pour alerte

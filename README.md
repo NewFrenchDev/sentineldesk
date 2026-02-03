@@ -136,7 +136,7 @@ Edit `~/.sentineldesk/config.json`:
   "cpu_spike_threshold_pct": 85.0,          // CPU% to trigger spike alert
   "cpu_spike_sustain_seconds": 15,          // How long spike must sustain
   
-  "suspicious_parent_alert": true,          // Enable parentage rules
+  "suspicious_parent_alert": true,          // Enable parent-child process rules
   "blacklist_path": "",                     // Custom blacklist (blank = use default)
   "persistence_watch_enabled": true,        // Monitor Run keys / Startup / Tasks
   
@@ -199,7 +199,7 @@ sqlite3 ~/.sentineldesk/sentineldesk.db ".mode csv" ".once export.csv" "SELECT *
 
 ### ✅ Sprint A (Implemented)
 1. Process tree parent→child visualization
-2. Suspicious parentage detection (Office→shell, exe from Temp)
+2. Suspicious parent-child process detection (Office→shell, exe from Temp)
 3. Hash blacklist integration
 4. Persistence monitoring (Run keys, Startup, Tasks)
 

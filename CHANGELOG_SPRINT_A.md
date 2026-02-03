@@ -198,7 +198,7 @@ if p.pid in suspicious_pids:
 ```
 
 **Critères de suspicion :**
-- Match d'une règle de parentage (Office→shell, exe depuis Temp, rundll32 anormal)
+- Match d'une règle de parent-child process (Office→shell, exe depuis Temp, rundll32 anormal)
 - Rendu visuel **immédiat** sans attendre l'alerte
 
 ---
