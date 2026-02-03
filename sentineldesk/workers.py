@@ -32,6 +32,11 @@ class SampleWorker(QtCore.QObject):
         self.store      = store
         self.integrity  = integrity
         self.detector   = detector
+        
+        # Cache last persistence snapshot to avoid emitting unchanged data
+        self._last_persistence_snapshot = {}
+        self._last_persistence_emit = 0
+        self._persistence_emit_interval = 30  # Only emit every 30s max
 
     @QtCore.Slot()
     def tick(self):
@@ -73,6 +78,14 @@ class SampleWorker(QtCore.QObject):
         self.system_ready.emit(sys_s)
         self.procs_ready.emit(procs)
         self.conns_ready.emit(conns)
-        self.persistence_ready.emit(persist)
+        
+        # CRITICAL: Only emit persistence_ready if data changed OR 30s elapsed
+        # This prevents flooding the GUI with unchanged persistence snapshots
+        if (persist != self._last_persistence_snapshot or 
+            ts - self._last_persistence_emit >= self._persistence_emit_interval):
+            self.persistence_ready.emit(persist)
+            self._last_persistence_snapshot = persist.copy()
+            self._last_persistence_emit = ts
+        
         if alerts:
             self.alerts_ready.emit(alerts)

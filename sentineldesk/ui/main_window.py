@@ -252,6 +252,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self._build_persistence_tab()
         self._build_timeline_tab()
 
+        # Refresh persistence table when user switches to that tab
+        self.tabs.currentChanged.connect(self._on_tab_changed)
+
         # Status bar
         self.status_bar = AlertFlash()
         vroot.addWidget(self.status_bar)
@@ -362,6 +365,11 @@ class MainWindow(QtWidgets.QMainWindow):
         lay.addWidget(self.tbl_timeline, 1)
 
         self.tabs.addTab(w, "  Timeline")
+
+    def _on_tab_changed(self, index: int):
+        """Called when user switches tabs. Refresh persistence if switching to that tab."""
+        if index == 3:  # Persistence tab (Dashboard=0, Tree=1, Alerts=2, Persistence=3)
+            self.update_persistence_table()
 
     # ═══════════════════════════════════════════
     # Widget factories
@@ -731,63 +739,92 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # ── Persistence table ─────────────────────
     def update_persistence_table(self):
-        """Called by Controller after on_persistence fires."""
-        rows = self.store.list_persistence()   # (key, value, first_seen, last_seen, ack)
+        """
+        Refresh persistence table from DB.
+        Called every 30s by timer - NOT on every tick.
+        Uses batching to avoid UI freeze.
+        """
+        rows = self.store.list_persistence(limit=300)
         t = self.tbl_persist
 
         t.blockSignals(True)
+        t.setSortingEnabled(False)
         t.setRowCount(len(rows))
 
-        new_count = 0
-        for r, (key, value, first_seen, _last_seen, ack) in enumerate(rows):
-            # Decompose key → type + name
-            if key.startswith("run:"):
-                kind = "Run Key"
-                name = key[4:]
-            elif key.startswith("startup:"):
-                kind = "Startup"
-                name = key[8:]
-            elif key.startswith("task:"):
-                kind = "Task"
-                name = key[5:]
+        # Process in batches asynchronously
+        BATCH_SIZE = 100  # Larger batches since we only do this every 30s
+        batch_index = [0]
+        new_count_total = [0]
+
+        def process_batch():
+            start = batch_index[0]
+            end = min(start + BATCH_SIZE, len(rows))
+            
+            for r in range(start, end):
+                key, value, first_seen, _last_seen, ack = rows[r]
+                
+                # Decompose key → type + name
+                if key.startswith("run:"):
+                    kind = "Run Key"
+                    name = key[4:]
+                elif key.startswith("startup:"):
+                    kind = "Startup"
+                    name = key[8:]
+                elif key.startswith("task:"):
+                    kind = "Task"
+                    name = key[5:]
+                else:
+                    kind = "Other"
+                    name = key
+
+                _set_cell(t, r, 0, kind)
+                _set_cell(t, r, 1, name)
+                _set_cell(t, r, 2, value)
+                _set_cell(t, r, 3, time.strftime("%H:%M:%S", time.localtime(first_seen)))
+
+                if ack:
+                    status_text = "known"
+                    status_color = PALETTE["green"]
+                else:
+                    status_text = "NEW"
+                    status_color = PALETTE["orange"]
+                    new_count_total[0] += 1
+
+                _set_cell(t, r, 4, status_text)
+                item = t.item(r, 4)
+                if item:
+                    item.setForeground(QColor(status_color))
+
+                # Colour the whole row if NEW
+                if not ack:
+                    for c in range(5):
+                        it = t.item(r, c)
+                        if it and c != 4:
+                            it.setBackground(QColor("#f9731620"))
+
+            batch_index[0] = end
+            
+            # Schedule next batch or finalize
+            if batch_index[0] < len(rows):
+                QTimer.singleShot(0, process_batch)
             else:
-                kind = "Other"
-                name = key
+                t.setSortingEnabled(True)
+                t.blockSignals(False)
+                t.viewport().update()
 
-            _set_cell(t, r, 0, kind)
-            _set_cell(t, r, 1, name)
-            _set_cell(t, r, 2, value)
-            _set_cell(t, r, 3, time.strftime("%H:%M:%S", time.localtime(first_seen)))
+                persist_idx = 3
+                if new_count_total[0] > 0:
+                    self.tabs.setTabText(persist_idx, f"  Persistence  ({new_count_total[0]})")
+                else:
+                    self.tabs.setTabText(persist_idx, "  Persistence")
 
-            if ack:
-                status_text = "known"
-                status_color = PALETTE["green"]
-            else:
-                status_text = "NEW"
-                status_color = PALETTE["orange"]
-                new_count += 1
-
-            _set_cell(t, r, 4, status_text)
-            item = t.item(r, 4)
-            if item:
-                item.setForeground(QColor(status_color))
-
-            # Colour the whole row if NEW
-            if not ack:
-                for c in range(5):
-                    it = t.item(r, c)
-                    if it and c != 4:
-                        it.setBackground(QColor("#f9731620"))
-
-        t.blockSignals(False)
-        t.viewport().update()
-
-        # Update tab text with count
-        persist_idx = 3   # Dashboard=0, Tree=1, Alerts=2, Persistence=3
-        if new_count > 0:
-            self.tabs.setTabText(persist_idx, f"  Persistence  ({new_count})")
+        # Start processing
+        if rows:
+            process_batch()
         else:
-            self.tabs.setTabText(persist_idx, "  Persistence")
+            t.setSortingEnabled(True)
+            t.blockSignals(False)
+            self.tabs.setTabText(3, "  Persistence")
 
     # ── DB refresh (alerts + timeline) ────────
     def _refresh_from_db(self):

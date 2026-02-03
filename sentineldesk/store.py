@@ -70,6 +70,9 @@ CREATE TABLE IF NOT EXISTS persistence_baseline (
   last_seen  INTEGER NOT NULL,
   ack        INTEGER DEFAULT 0  -- 1 = user acknowledged
 );
+
+-- Index to speed up ORDER BY first_seen DESC queries
+CREATE INDEX IF NOT EXISTS idx_persistence_first_seen ON persistence_baseline(first_seen DESC);
 """
 
 
@@ -235,9 +238,10 @@ class Store:
         )
         self._conn.commit()
 
-    def list_persistence(self) -> List[Tuple[Any, ...]]:
+    def list_persistence(self, limit: int = 300) -> List[Tuple[Any, ...]]:
         """Returns list of (key, value, first_seen, last_seen, ack) ordered by first_seen DESC"""
         cur = self._conn.execute(
-            "SELECT key, value, first_seen, last_seen, ack FROM persistence_baseline ORDER BY first_seen DESC"
+            "SELECT key, value, first_seen, last_seen, ack FROM persistence_baseline ORDER BY first_seen DESC LIMIT ?",
+            (limit,)
         )
         return cur.fetchall()
